@@ -252,8 +252,8 @@ bool Sapphire::Scripting::ScriptMgr::onEventHandlerTradeReturn( Entity::Player& 
   return false;
 }
 
-bool Sapphire::Scripting::ScriptMgr::onEventItem( Entity::Player& player, uint32_t eventItemId,
-                                                  uint32_t eventId, uint32_t castTime, uint64_t targetId )
+bool Sapphire::Scripting::ScriptMgr::onEventItem( Entity::Player& player, uint32_t eventId,
+                                                  uint32_t eventItemId, uint64_t actorId )
 {
   auto& eventMgr = Common::Service< World::Manager::EventMgr >::ref();
 
@@ -264,9 +264,9 @@ bool Sapphire::Scripting::ScriptMgr::onEventItem( Entity::Player& player, uint32
   auto script = m_nativeScriptMgr->getScript< Sapphire::ScriptAPI::EventScript >( eventId );
   if( script )
   {
-    player.eventStart( targetId, eventId, Event::EventHandler::Item, 0, 0 );
+    player.eventStart( actorId, eventId, Event::EventHandler::Item, 0, eventItemId );
 
-    script->onEventItem( player, eventItemId, eventId, castTime, targetId );
+    script->onEventItem( player, eventId, eventItemId, actorId );
     return true;
   }
 

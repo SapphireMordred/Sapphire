@@ -10,6 +10,7 @@
 #include "Network/GameConnection.h"
 
 #include "Manager/ActionMgr.h"
+#include "Script/ScriptMgr.h"
 
 using namespace Sapphire::Common;
 using namespace Sapphire::Network::Packets;
@@ -63,6 +64,35 @@ void Sapphire::Network::GameConnection::actionHandler( const Packets::FFXIVARR_P
         return;
 
       actionMgr.handleItemAction( player, actionId, itemAction, itemSourceSlot, itemSourceContainer );
+
+      break;
+    }
+
+    case Common::SkillType::EventItem:
+    {
+      auto eitem = exdData.get< Data::EventItem >( actionId );
+      if ( !eitem )
+        return;
+
+      if ( itemSourceSlot != 0 || itemSourceContainer != 0 ) {
+        // possible unimplemented functionality but continue anyway
+        player.sendDebug( "itemSourceSlot = {0}, itemSourceSlot = {1}: Unexpected deviance from 0, possible unimplemented functionality", itemSourceSlot, itemSourceContainer );
+      }
+
+      if ( eitem->action == 0 )
+        return;
+
+      if ( eitem->action != 1 )
+      {
+        player.sendDebug( "EventItem action {0} is not handled", eitem->action );
+        return;
+      }
+
+      auto eventId = eitem->quest;
+
+      player.sendDebug( "Using EventItem '{0}', eventId {1}", eitem->name, eventId );
+
+      actionMgr.handleEventItemAction( player, actionId, eventId, targetId );
 
       break;
     }

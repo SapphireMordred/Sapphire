@@ -10,6 +10,8 @@
 
 #include <Network/PacketWrappers/EffectPacket.h>
 
+#include <Service.h>
+
 using namespace Sapphire;
 
 void World::Manager::ActionMgr::handlePlacedPlayerAction( Entity::Player& player, uint32_t actionId,
@@ -70,6 +72,22 @@ void World::Manager::ActionMgr::handleItemAction( Sapphire::Entity::Player& play
 
   // todo: item actions don't have cast times? if so we can just start it and we're good
   action->start();
+}
+
+void World::Manager::ActionMgr::handleEventItemAction( Sapphire::Entity::Player& player, uint32_t eventItemId,
+                                                       uint32_t eventId, uint64_t targetId )
+{
+  player.sendDebug( "got eventitem act: {0}, eventId: {1}", eventItemId, eventId );
+
+  player.eventItemActionStart( eventId, eventItemId,
+    [ & ]( Entity::Player& player, uint32_t eventId, uint32_t eventItemId, uint64_t actorId )
+    {
+      player.sendDebug( "finishcallback called: eventId={0}, eventItemId={1}, actorId={2} ", eventId, eventItemId, actorId);
+      auto& scriptMgr = Common::Service< Scripting::ScriptMgr >::ref();
+      scriptMgr.onEventItem( player, eventId, eventItemId, actorId );
+
+      player.checkEvent( eventId );
+    }, nullptr, targetId );
 }
 
 void World::Manager::ActionMgr::handleMountAction( Entity::Player& player, uint16_t mountId,

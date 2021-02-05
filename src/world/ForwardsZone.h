@@ -85,12 +85,14 @@ namespace World::Action
 {
 TYPE_FORWARD( Action );
 TYPE_FORWARD( EventAction );
+TYPE_FORWARD( EventItemAction );
 TYPE_FORWARD( ItemAction );
 TYPE_FORWARD( MountAction );
 TYPE_FORWARD( EffectBuilder );
 TYPE_FORWARD( EffectResult );
 
 using ActionCallback = std::function< void( Entity::Player&, uint32_t, uint64_t ) >;
+using EventItemActionCallback = std::function< void( Entity::Player&, uint32_t, uint32_t, uint64_t ) >;
 }
 
 namespace Network

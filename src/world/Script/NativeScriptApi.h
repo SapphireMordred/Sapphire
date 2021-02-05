@@ -159,8 +159,7 @@ namespace Sapphire::ScriptAPI
 
     virtual void onOutsideRange( Sapphire::Entity::Player& player, uint32_t eventId, uint32_t param1, float x, float y, float z );
 
-    virtual void onEventItem( Sapphire::Entity::Player& player, uint32_t eventItemId, uint32_t eventId, uint32_t castTime,
-                              uint64_t targetId );
+    virtual void onEventItem( Sapphire::Entity::Player& player, uint32_t eventId, uint32_t eventItemId, uint64_t actorId );
 
     virtual void onEventHandlerTradeReturn( Sapphire::Entity::Player& player, uint32_t eventId, uint16_t subEvent, uint16_t param,
                                             uint32_t catalogId );

@@ -120,8 +120,7 @@ namespace Sapphire::ScriptAPI
   {
   }
 
-  void EventScript::onEventItem( Entity::Player& player, uint32_t eventItemId, uint32_t eventId, uint32_t castTime,
-                                 uint64_t targetId )
+  void EventScript::onEventItem( Entity::Player& player, uint32_t eventId, uint32_t eventItemId, uint64_t actorId )
   {
   }
 

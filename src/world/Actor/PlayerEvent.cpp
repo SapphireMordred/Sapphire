@@ -17,6 +17,7 @@
 #include "ServerMgr.h"
 
 #include "Action/EventAction.h"
+#include "Action/EventItemAction.h"
 
 using namespace Sapphire::Common;
 using namespace Sapphire::Network::Packets;
@@ -355,17 +356,35 @@ void Sapphire::Entity::Player::eventActionStart( uint32_t eventId,
 
 
 void Sapphire::Entity::Player::eventItemActionStart( uint32_t eventId,
-                                                     uint32_t action,
-                                                     World::Action::ActionCallback finishCallback,
+                                                     uint32_t eventItemId,
+                                                     World::Action::EventItemActionCallback finishCallback,
                                                      World::Action::ActionCallback interruptCallback,
-                                                     uint64_t additional )
+                                                     uint64_t targetId )
 {
-//  Action::ActionPtr pEventItemAction = Action::make_EventItemAction( getAsChara(), eventId, action,
-//                                                                     finishCallback, interruptCallback, additional );
-//
-//  setCurrentAction( pEventItemAction );
-//
-//  pEventItemAction->onStart();
+  auto pEventItemAction = World::Action::make_EventItemAction( getAsChara(), eventId, eventItemId,
+                                                               finishCallback, interruptCallback, targetId );
+
+/*
+  auto pEvent = getEvent( eventId );
+
+  if( !pEvent && getEventCount() )
+  {
+    // We're trying to play a nested event, need to start it first.
+    eventStart( getId(), eventId, Event::EventHandler::Nest, 0, 0 );
+    pEvent = getEvent( eventId );
+  }
+  else if( !pEvent )
+  {
+    Logger::error( "Could not find event #{0}, event has not been started!", eventId );
+    return;
+  }
+
+  if( pEvent )
+    pEvent->setPlayedScene( true );
+
+*/
+  setCurrentAction( pEventItemAction );
+  pEventItemAction->start();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

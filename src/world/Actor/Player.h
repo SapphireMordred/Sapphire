@@ -64,8 +64,8 @@ namespace Sapphire::Entity
                            World::Action::ActionCallback interruptCallback, uint64_t additional );
 
     /*! start an event item action */
-    void eventItemActionStart( uint32_t eventId, uint32_t action, World::Action::ActionCallback finishCallback,
-                               World::Action::ActionCallback interruptCallback, uint64_t additional );
+    void eventItemActionStart( uint32_t eventId, uint32_t eventItemId, World::Action::EventItemActionCallback finishCallback,
+                               World::Action::ActionCallback interruptCallback, uint64_t targetId );
 
     /*! start/register a normal event */
     void eventStart( uint64_t actorId, uint32_t eventId, Event::EventHandler::EventType eventParam, uint8_t eventParam1,
