@@ -4,6 +4,7 @@
 #include <Config/ConfigMgr.h>
 #include <Util/Util.h>
 #include "ServerMgr.h"
+#include "Service.h"
 
 #include <filesystem>
 
@@ -95,7 +96,7 @@ Sapphire::Scripting::ScriptInfo* Sapphire::Scripting::ScriptLoader::loadModule( 
 
 Sapphire::ScriptAPI::ScriptObject** Sapphire::Scripting::ScriptLoader::getScripts( ModuleHandle handle )
 {
-  using getScripts = Sapphire::ScriptAPI::ScriptObject** ( * )();
+  using getScripts = Sapphire::ScriptAPI::ScriptObject** ( * )( Common::ServiceContainer* );
 
 #ifdef _WIN32
   getScripts func = reinterpret_cast< getScripts >( GetProcAddress( handle, "getScripts" ) );
@@ -105,7 +106,7 @@ Sapphire::ScriptAPI::ScriptObject** Sapphire::Scripting::ScriptLoader::getScript
 
   if( func )
   {
-    auto ptr = func();
+    auto ptr = func( Common::ServiceContainer::pSvcContainer );
 
     return ptr;
   }

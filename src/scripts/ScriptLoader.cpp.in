@@ -1,4 +1,5 @@
 #include <Script/NativeScriptApi.h>
+#include <Service.h>
 
 @ScriptIncludes@
 
@@ -8,7 +9,8 @@ const Sapphire::ScriptAPI::ScriptObject* ptrs[] =
    nullptr
 };
 
-extern "C" EXPORT const Sapphire::ScriptAPI::ScriptObject** getScripts()
+extern "C" EXPORT const Sapphire::ScriptAPI::ScriptObject** getScripts( Sapphire::Common::ServiceContainer* pSc )
 {
+   Sapphire::Common::ServiceContainer::pSvcContainer = pSc;
    return ptrs;
 }

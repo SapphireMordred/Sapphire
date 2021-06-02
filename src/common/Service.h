@@ -4,22 +4,26 @@
 #include <memory>
 #include <utility>
 #include <cassert>
+#include <unordered_map>
 
 // stolen from: https://github.com/skypjack/entt/blob/master/src/entt/locator/locator.hpp
 
 namespace Sapphire::Common
 {
   /**
-   * @brief Service locator, nothing more.
-   *
-   * A service locator can be used to do what it promises: locate services.<br/>
-   * Usually service locators are tightly bound to the services they expose and
-   * thus it's hard to define a general purpose class to do that. This template
-   * based implementation tries to fill the gap and to get rid of the burden of
-   * defining a different specific locator for each application.
-   *
-   * @tparam SvcType Type of service managed by the locator.
+   * @brief Replacement of Sapphire's Service locator which is not working when compiling under Visual Studio, keeping its api.
    */
+
+  class ServiceContainer
+  {
+  private:
+    std::unordered_map< size_t, std::shared_ptr< void > > serviceTable;
+  public:
+    std::shared_ptr< void > get( size_t id );
+    void set( size_t id, std::shared_ptr< void > svc );
+    static ServiceContainer* pSvcContainer;
+  };
+
   template< typename SvcType >
   struct Service
   {
@@ -38,6 +42,8 @@ namespace Sapphire::Common
      */
     static bool empty() noexcept
     {
+      auto id = typeid( SvcType ).hash_code();
+      auto service = ServiceContainer::pSvcContainer->get( id );
       return !static_cast< bool >( service );
     }
 
@@ -53,6 +59,8 @@ namespace Sapphire::Common
      */
     static std::weak_ptr< SvcType > get() noexcept
     {
+      auto id = typeid( SvcType ).hash_code();
+      auto service = std::reinterpret_pointer_cast< SvcType >( ServiceContainer::pSvcContainer->get( id ) );
       return service;
     }
 
@@ -72,6 +80,8 @@ namespace Sapphire::Common
      */
     static SvcType& ref() noexcept
     {
+      auto id = typeid( SvcType ).hash_code();
+      auto service = std::reinterpret_pointer_cast< SvcType >( ServiceContainer::pSvcContainer->get( id ) );
       return *service;
     }
 
@@ -84,7 +94,9 @@ namespace Sapphire::Common
     template< typename Impl = SvcType, typename... Args >
     static void set( Args&& ... args )
     {
-      service = std::make_shared< Impl >( std::forward< Args >( args )... );
+      auto id = typeid( SvcType ).hash_code();
+      std::shared_ptr< SvcType > ptr = std::make_shared< Impl >( std::forward< Args >( args )... );
+      ServiceContainer::pSvcContainer->set( id, std::move( ptr ) );
     }
 
     /**
@@ -94,7 +106,8 @@ namespace Sapphire::Common
     static void set( std::shared_ptr< SvcType > ptr )
     {
       assert( static_cast< bool >( ptr ) );
-      service = std::move( ptr );
+      auto id = typeid( SvcType ).hash_code();
+      ServiceContainer::pSvcContainer->set( id, std::move( ptr ) );
     }
 
     /**
@@ -104,11 +117,9 @@ namespace Sapphire::Common
      */
     static void reset()
     {
-      service.reset();
+      auto id = typeid( SvcType ).hash_code();
+      ServiceContainer::pSvcContainer->set( id, nullptr );
     }
-
-  private:
-    inline static std::shared_ptr< SvcType > service = nullptr;
   };
 }
 
